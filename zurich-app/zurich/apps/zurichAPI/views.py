@@ -102,7 +102,7 @@ class ILPOptimizeView(views.APIView):
             return Response(
                 {
                     "status": "Error",
-                    "message": "ML algorithm is not available"
+                    "message": "The algorithm is not available"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -115,7 +115,7 @@ class ILPOptimizeView(views.APIView):
             full_response=full_response,
             response=response,
             feedback="",
-            parent_ilpalgorithm=algs[alg_index],
+            parent_algorithm=algs[alg_index],
         )
 
         model_request.save()

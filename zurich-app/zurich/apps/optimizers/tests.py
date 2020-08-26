@@ -4,9 +4,9 @@ from apps.optimizers.registry import OptimizerRegistry
 
 
 # test algorithm class
-class ILPTests(TestCase):
+class AlgTests(TestCase):
     '''ILP Test object to run test against our ILP algorithm'''
-    def test_ilp_algorithm(self):
+    def test_algorithm(self):
         '''method to run algorithm tests'''
         test_constraints = {
             "budget": 7500,

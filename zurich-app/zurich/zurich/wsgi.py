@@ -20,7 +20,7 @@ try:
     registry = OptimizerRegistry()
     model = ILPOptimizer()
     registry.add_algorithm(
-        endpoint_name='integer_programming',
+        endpoint_name='ilp',
         algorithm_object=model,
         algorithm_name='integer programming',
         algorithm_status='production',

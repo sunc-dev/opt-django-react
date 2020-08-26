@@ -21,9 +21,9 @@ class AlgorithmSerializer(serializers.ModelSerializer):
 
     current_status = serializers.SerializerMethodField(read_only=True)
 
-    def get_current_status(self, ilpalgorithm):
+    def get_current_status(self, algorithm):
         return AlgorithmStatus.objects.filter(
-            parent_ilpalgorithm=ilpalgorithm).latest('created_at').status
+            parent_algorithm=algorithm).latest('created_at').status
 
     class Meta:
         model = Algorithms
@@ -38,16 +38,16 @@ class AlgorithmStatusSerializer(serializers.ModelSerializer):
         model = AlgorithmStatus
         read_only_fields = ("id", "active")
         fields = ("id", "active", "status", "created_by", "created_at",
-                  "parent_ilpalgorithm")
+                  "parent_algorithm")
 
 
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requests
         read_only_fields = ("id", "data", "full_response", "response",
-                            "created_at", "parent_ilpalgorithm")
+                            "created_at", "parent_algorithm")
         fields = ("id", "data", "full_response", "response", "feedback",
-                  "created_at", "parent_ilpalgorithm")
+                  "created_at", "parent_algorithm")
 
 
 class ModelConstraintsSerializer(serializers.ModelSerializer):
