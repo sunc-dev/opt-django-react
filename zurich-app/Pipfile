@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+yapf = "*"
+flake8 = "*"
+
+[packages]
+django = "*"
+djangorestframework = "*"
+pylint-django = "*"
+pulp = "*"
+markdown = "*"
+django-filter = "*"
+pandas = "*"
+flake8-django = "*"
+pip = "*"
+install = "*"
+autopep8 = "*"
+django-reset-migrations = "*"
+
+[requires]
+python_version = "3.8"
