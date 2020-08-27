@@ -40,8 +40,8 @@ class ILPOptimizer(object):
             model, decisions = modelize.init_model(inputs)
             model = modelize.add_constraints(model, inputs, decisions)
             response, response_decisions = modelize.solve(model, inputs)
-            response, response_decisions = modelize.postprocessing(
-                response, response_decisions)
+            # response, response_decisions = modelize.postprocessing(
+            #    response, response_decisions)
 
             # print('Model run successful')
             self.response = response
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         "trees": '10.23223',
         "water": '22.232342',
         "area": '15.234234'
-    }
+    }'''
     x = ILPOptimizer()
 
-    z, y = x.optimize(constraints)'''
+    z, y = x.optimize()

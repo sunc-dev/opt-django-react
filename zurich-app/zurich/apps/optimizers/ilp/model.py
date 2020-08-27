@@ -123,29 +123,42 @@ class Model(object):
     def solve(self, model, inputs):
         '''function to run ILP solver'''
         solver = pl.PULP_CBC_CMD(msg=True, warmStart=True)
-        result = model.solve(solver)
+        response = model.solve(solver)
+        model_status = pl.constants.LpStatus[response]
+        solution_value = pl.value(model.objective)
+        if model_status == 'Optimal' and solution_value != 0:
+            print("Model status: ", model_status)
+            print("Optimal solution output: ", solution_value)
+            # for variable in model.variables():
+            #    print('Decision: ' + variable.name, "=", variable.varValue)
 
-        print("Model status: " + pl.constants.LpStatus[result])
-        print("Optimal solution output: ", pl.value(model.objective))
-        # for variable in model.variables():
-        #    print('Decision: ' + variable.name, "=", variable.varValue)
+            response_decisions = [(int(i.name.strip('x')), i.varValue)
+                                  for i in model.variables()]
+            response_decisions = pd.DataFrame(list(response_decisions),
+                                              columns=['id', 'isSelected'])
 
-        decisions = [(int(i.name.strip('x')), i.varValue)
-                     for i in model.variables()]
-        decisions = pd.DataFrame(list(decisions), columns=['id', 'isSelected'])
+            response = inputs.merge(response_decisions[['id', 'isSelected']],
+                                    how='left',
+                                    left_on=inputs.index,
+                                    right_on=['id'])
 
-        result = inputs.merge(decisions[['id', 'isSelected']],
-                              how='left',
-                              left_on=inputs.index,
-                              right_on=['id'])
+            response, response_descisions = Model.postprocessing(
+                self, response, response_decisions)
+        elif model_status == 'Optimal' and solution_value == 0:
+            response = 'No solution found, please enter constraints!'
+            response_decisions = '''No decisions were made! Constraints required.'''
+            print(response, response_decisions)
 
-        return result, decisions
+        else:
+            response = '''No solution found based on the constraints, non-optimal/infeasible solution!'''
+            response_decisions = '''No decisions were made due, non-optimal/infeasible solution'''
+            print(response, response_decisions)
+        return response, response_decisions
 
-    def postprocessing(self, result, decisions):
+    def postprocessing(self, response, response_decisions):
         '''method to run post processing on result, dictionary conversion'''
-        result = result.drop(['id'], axis=1)
-        result = result.to_dict('index')
-        decisions = decisions.to_dict('index')
-        return result, decisions
 
-        return result
+        response = response.drop(['id'], axis=1)
+        response = response.to_dict('index')
+        response_decisions = response_decisions.to_dict('index')
+        return response, response_decisions
