@@ -102,10 +102,10 @@ class ModelConstraintsModelView(views.APIView):
         alg_index = 0
         algorithm_object = registry.endpoints[algs[alg_index].id]
         full_response, response = algorithm_object.optimize(
-            request.data.dict())
+            request.POST.dict())
 
         model_request = Requests(
-            data=json.dumps(request.data.dict()),
+            data=json.dumps(request.POST),
             full_response=full_response,
             response=response,
             feedback="",
@@ -115,8 +115,9 @@ class ModelConstraintsModelView(views.APIView):
         model_request.save()
 
         full_response["request_id"] = model_request.id
-        full_response['data'] = request.data.get('budget')
+        full_response['data'] = request.POST
         # full_response = request.data.dict()
+        print(request.POST.dict())
         return Response(full_response)
 
 
@@ -162,6 +163,7 @@ class ILPOptimizeView(views.APIView):
         model_request.save()
 
         full_response["request_id"] = model_request.id
+        print(request.data)
         return Response(full_response)
 
 

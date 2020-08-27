@@ -16,8 +16,13 @@ class ILPOptimizer(object):
     '''object that represents the ILP optimization with an initalization method
     '''
     def __init__(self):
-        self.name = 'ILP optimizer'
-        self.version = '0.0.1'
+        self.endpoint_name = 'ilp'
+        self.object = self,
+        self.name = 'integer_programming'
+        self.status = 'production'
+        self.version = 'v0.0.1'
+        self.owner = 'Chris Sun'
+        self.description = 'Integer programming with preprocessing'
 
     def optimize(self, constraints=None):
         '''function that execute model script'''
@@ -48,7 +53,15 @@ class ILPOptimizer(object):
 
 if __name__ == '__main__':
     '''constraints = '{"budget": 7500,"proximity": 20,"endangerment": 15,
-     "trees": 10,"water": 22,"area": 15}'
+     "trees": 10, "water": 22, "area": 15} '''
+    '''constraints = {
+        "budget": '7500.5523',
+        "proximity": '20.5532',
+        "endangerment": '15.333',
+        "trees": '10.23223',
+        "water": '22.232342',
+        "area": '15.234234'
+    }
     x = ILPOptimizer()
 
     z, y = x.optimize(constraints)'''

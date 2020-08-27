@@ -19,13 +19,12 @@ application = get_wsgi_application()
 try:
     registry = OptimizerRegistry()
     model = ILPOptimizer()
-    registry.add_algorithm(
-        endpoint_name='ilp',
-        algorithm_object=model,
-        algorithm_name='integer programming',
-        algorithm_status='production',
-        algorithm_version='0.0.1',
-        owner='Chris Sun',
-        algorithm_description='integer programming with processing')
+    registry.add_algorithm(endpoint_name=model.endpoint_name,
+                           algorithm_object=model,
+                           algorithm_name=model.name,
+                           algorithm_status=model.status,
+                           algorithm_version=model.version,
+                           owner=model.owner,
+                           algorithm_description=model.description)
 except Exception as err_msg:
     print('Error while loading algorithm to registry,', str(err_msg))

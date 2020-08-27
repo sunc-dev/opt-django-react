@@ -21,6 +21,26 @@ class Model(object):
         self.modelName = 'porfolio-opt'
         self.constraints = constraints
 
+    def checkDict(self):
+        # method to
+        keys = [
+            'budget', 'proximity', 'endangerment', 'trees', 'water', 'area'
+        ]
+
+        if (self.constraints is None) or (not self.constraints):
+            self.constraints = {key: 0 for key in keys}
+        else:
+            constraints = {}
+            for item, value in self.constraints.items():
+                for key in keys:
+                    if item == key:
+                        value = float(value)
+                        constraints[item] = value
+            self.constraints = constraints
+            # self.constraint = self.constraints
+
+        return self.constraints
+
     def load(self):
         '''function to transform data'''
 
@@ -63,7 +83,8 @@ class Model(object):
         return model, decisions
 
     def add_constraints(self, model, inputs, decisions):
-        '''function to setup ILP constraints'''
+        '''method to setup ILP constraints'''
+        constraints = Model.checkDict(self)
         budget = ''
         proximity = ''
         endangerment = ''
@@ -84,15 +105,14 @@ class Model(object):
                         area += row.Area * decision
 
             # Constraint inequalities
-            model += (budget <= self.constraints['budget'],
-                      'budget_constraint')
-            model += (proximity <= self.constraints['proximity'],
+            model += (budget <= constraints['budget'], 'budget_constraint')
+            model += (proximity <= constraints['proximity'],
                       'proximity_constraint')
-            model += (endangerment >= self.constraints['endangerment'],
+            model += (endangerment >= constraints['endangerment'],
                       'endangered_constraint')
-            model += (trees >= self.constraints['trees'], 'trees_constraint')
-            model += (water >= self.constraints['water'], 'water_constraint')
-            model += (area >= self.constraints['area'], 'area_constraint')
+            model += (trees >= constraints['trees'], 'trees_constraint')
+            model += (water >= constraints['water'], 'water_constraint')
+            model += (area >= constraints['area'], 'area_constraint')
 
         except Exception as err_msg:
             print("Constraint initialization failure, {}".format(err_msg))
