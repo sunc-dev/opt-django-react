@@ -56,9 +56,13 @@ class ModelConstraints(models.Model):
         verbose_name_plural = "Model constraints"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    budget = models.DecimalField(max_digits=12, decimal_places=2)
-    proximity = models.DecimalField(max_digits=12, decimal_places=2)
-    endangerment = models.DecimalField(max_digits=12, decimal_places=2)
-    trees = models.DecimalField(max_digits=12, decimal_places=2)
-    water = models.DecimalField(max_digits=12, decimal_places=2)
-    area = models.DecimalField(max_digits=12, decimal_places=2)
+    budget = models.IntegerField()
+    proximity = models.IntegerField()
+    endangerment = models.IntegerField()
+    trees = models.IntegerField()
+    water = models.IntegerField()
+    area = models.IntegerField()
+    ALG_CHOICES = (('ilp', 'ILP'), ('Other', 'Other'))
+    algorithm = models.CharField(max_length=9,
+                                 choices=ALG_CHOICES,
+                                 default='ILP')

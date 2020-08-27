@@ -74,9 +74,50 @@ class RequestsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
     queryset = Requests.objects.all()
 
 
-class ModelConstraintsModelViewSet(viewsets.ModelViewSet):
+class ModelConstraintsModelView(views.APIView):
     serializer_class = ModelConstraintsSerializer
     queryset = ModelConstraints.objects.all()
+    ''' POST request too post constraints to optimization'''
+    def post(self, request, format=None):
+        algorithm_status = self.request.query_params.get(
+            "status", "production")
+
+        version = self.request.query_params.get("version")
+        algs = Algorithms.objects.filter(
+            parent_endpoint__name=request.data['algorithm'],
+            status__status=algorithm_status,
+            status__active=True)
+
+        if version is not None:
+            algs = algs.filter(version=version)
+
+        if len(algs) == 0:
+            return Response(
+                {
+                    "status": "Error",
+                    "message": "The algorithm is not available"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        alg_index = 0
+        algorithm_object = registry.endpoints[algs[alg_index].id]
+        full_response, response = algorithm_object.optimize(
+            request.data.dict())
+
+        model_request = Requests(
+            data=json.dumps(request.data.dict()),
+            full_response=full_response,
+            response=response,
+            feedback="",
+            parent_algorithm=algs[alg_index],
+        )
+
+        model_request.save()
+
+        full_response["request_id"] = model_request.id
+        full_response['data'] = request.data.get('budget')
+        # full_response = request.data.dict()
+        return Response(full_response)
 
 
 ''' endpoint for our optimization view '''
@@ -121,5 +162,9 @@ class ILPOptimizeView(views.APIView):
         model_request.save()
 
         full_response["request_id"] = model_request.id
-
         return Response(full_response)
+
+
+class ConstraintsModelViewSet(viewsets.ModelViewSet):
+    serializer_class = ModelConstraintsSerializer
+    queryset = ModelConstraints.objects.all()

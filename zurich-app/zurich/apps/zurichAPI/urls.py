@@ -12,8 +12,9 @@ from apps.zurichAPI.views import EndpointsViewSet
 from apps.zurichAPI.views import AlgorithmsViewSet
 from apps.zurichAPI.views import AlgorithmStatusViewSet
 from apps.zurichAPI.views import RequestsViewSet
-from apps.zurichAPI.views import ModelConstraintsModelViewSet
+from apps.zurichAPI.views import ModelConstraintsModelView
 from apps.zurichAPI.views import ILPOptimizeView
+from apps.zurichAPI.views import ConstraintsModelViewSet
 
 router = routers.DefaultRouter()
 router.register(r"endpoints", EndpointsViewSet, basename='endpoint')
@@ -21,7 +22,7 @@ router.register(r"algorithms", AlgorithmsViewSet, basename='algorithms')
 router.register(r"status", AlgorithmStatusViewSet, basename='status')
 router.register(r"requests", RequestsViewSet, basename='requests')
 router.register(r"constraints",
-                ModelConstraintsModelViewSet,
+                ConstraintsModelViewSet,
                 basename='constraints')
 
 urlpatterns = [
@@ -29,4 +30,5 @@ urlpatterns = [
     url(r"^api/(?P<endpoint_name>.+)/optimize$",
         ILPOptimizeView.as_view(),
         name="optimize"),
+    url(r"^api/form", ModelConstraintsModelView.as_view(), name='form')
 ]
