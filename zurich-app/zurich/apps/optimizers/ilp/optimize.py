@@ -25,15 +25,7 @@ class ILPOptimizer(object):
         self.description = 'Integer programming with preprocessing'
 
     def optimize(self, constraints=None):
-        '''function that execute model script'''
-        keys = [
-            'budget', 'proximity', 'endangerment', 'trees', 'water', 'area'
-        ]
-
-        if constraints is None:
-            constraints = {key: 0 for key in keys}
-        else:
-            constraints = constraints
+        '''method to execute optimization model'''
         try:
             modelize = Model(constraints)
             inputs = modelize.load()

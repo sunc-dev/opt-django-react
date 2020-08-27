@@ -34,9 +34,12 @@ class Model(object):
             for item, value in self.constraints.items():
                 for key in keys:
                     if item == key:
-                        value = float(value)
-                        constraints[item] = value
-            self.constraints = constraints
+                        if value:
+                            value = float(value)
+                            constraints[item] = value
+                        else:
+                            value = float(0)
+                            constraints[item] = value
             # self.constraint = self.constraints
 
         return self.constraints
@@ -126,6 +129,7 @@ class Model(object):
         response = model.solve(solver)
         model_status = pl.constants.LpStatus[response]
         solution_value = pl.value(model.objective)
+
         if model_status == 'Optimal' and solution_value != 0:
             print("Model status: ", model_status)
             print("Optimal solution output: ", solution_value)
@@ -144,6 +148,7 @@ class Model(object):
 
             response, response_descisions = Model.postprocessing(
                 self, response, response_decisions)
+
         elif model_status == 'Optimal' and solution_value == 0:
             response = 'No solution found, please enter constraints!'
             response_decisions = '''No decisions were made! Constraints required.'''
