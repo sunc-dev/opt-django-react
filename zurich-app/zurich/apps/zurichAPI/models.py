@@ -62,6 +62,7 @@ class ModelConstraints(models.Model):
     trees = models.FloatField(blank=True, default=0)
     water = models.FloatField(blank=True, default=0)
     area = models.FloatField(blank=True, default=0)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
     ALG_CHOICES = (('ilp', 'ILP'), ('Other', 'Other'))
     algorithm = models.CharField(max_length=9,
                                  choices=ALG_CHOICES,

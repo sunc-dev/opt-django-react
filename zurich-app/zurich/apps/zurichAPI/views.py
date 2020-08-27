@@ -74,7 +74,7 @@ class RequestsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
     queryset = Requests.objects.all()
 
 
-class ModelConstraintsModelView(views.APIView):
+class ModelView(views.APIView):
     serializer_class = ModelConstraintsSerializer
     queryset = ModelConstraints.objects.all()
     ''' POST request too post constraints to optimization'''
@@ -99,12 +99,15 @@ class ModelConstraintsModelView(views.APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         alg_index = 0
+
         algorithm_object = registry.endpoints[algs[alg_index].id]
         full_response, response, constraints = algorithm_object.optimize(
             request.POST.dict())
         print(full_response)
-        model_request = Requests(
+
+        requests_model = Requests(
             data=json.dumps(request.POST),
             full_response=full_response,
             response=response,
@@ -112,14 +115,16 @@ class ModelConstraintsModelView(views.APIView):
             parent_algorithm=algs[alg_index],
         )
 
-        model_request.save()
+        requests_model.save()
 
-        full_response["request_id"] = model_request.id
+        full_response["request_id"] = requests_model.id
         full_response['data'] = constraints
 
-        # full_response = request.data.dict()
-        print(request.POST.dict())
-        print(constraints)
+        constraints_model = ModelConstraints()
+
+        constraints_model.save()
+
+        # print(request.POST.dict())
         return Response(full_response)
 
 
@@ -127,17 +132,15 @@ class ModelConstraintsModelView(views.APIView):
 
 
 class ILPOptimizeView(views.APIView):
-    def post(self, request, endpoint_name, format=None):
-
-        # algorithm_id = self.request.query_params.get("id")
+    def post(self, request, format=None):
         algorithm_status = self.request.query_params.get(
             "status", "production")
 
         version = self.request.query_params.get("version")
-
-        algs = Algorithms.objects.filter(parent_endpoint__name=endpoint_name,
-                                         status__status=algorithm_status,
-                                         status__active=True)
+        algs = Algorithms.objects.filter(
+            parent_endpoint__name=request.data['algorithm'],
+            status__status=algorithm_status,
+            status__active=True)
 
         if version is not None:
             algs = algs.filter(version=version)
@@ -150,28 +153,36 @@ class ILPOptimizeView(views.APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         alg_index = 0
+
         algorithm_object = registry.endpoints[algs[alg_index].id]
         full_response, response, constraints = algorithm_object.optimize(
-            request.data)
+            request.POST.dict())
+        print(full_response)
 
-        model_request = Requests(
-            data=json.dumps(request.data),
+        requests_model = Requests(
+            data=json.dumps(request.POST),
             full_response=full_response,
             response=response,
             inputs=constraints,
             parent_algorithm=algs[alg_index],
         )
 
-        model_request.save()
+        requests_model.save()
 
-        full_response["request_id"] = model_request.id
-        full_response['data'] = request.POST
-        # full_response = request.data.dict()
-        print(request.POST.dict())
+        full_response["request_id"] = requests_model.id
+        full_response['data'] = constraints
+
+        constraints_model = ModelConstraints()
+
+        constraints_model.save()
+
+        # print(request.POST.dict())
         return Response(full_response)
 
 
-class ConstraintsModelViewSet(viewsets.ModelViewSet):
+class ConstraintsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
+                         mixins.ListModelMixin, mixins.UpdateModelMixin):
     serializer_class = ModelConstraintsSerializer
     queryset = ModelConstraints.objects.all()

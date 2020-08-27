@@ -53,4 +53,5 @@ class RequestSerializer(serializers.ModelSerializer):
 class ModelConstraintsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelConstraints
-        fields = '__all__'
+        read_only_fields = ("id", "created_at")
+        fields = ('__all__')
