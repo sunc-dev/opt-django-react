@@ -101,23 +101,25 @@ class ModelConstraintsModelView(views.APIView):
             )
         alg_index = 0
         algorithm_object = registry.endpoints[algs[alg_index].id]
-        full_response, response = algorithm_object.optimize(
+        full_response, response, constraints = algorithm_object.optimize(
             request.POST.dict())
-
+        print(full_response)
         model_request = Requests(
             data=json.dumps(request.POST),
             full_response=full_response,
             response=response,
-            feedback="",
+            inputs=constraints,
             parent_algorithm=algs[alg_index],
         )
 
         model_request.save()
 
         full_response["request_id"] = model_request.id
-        full_response['data'] = request.POST
+        full_response['data'] = constraints
+
         # full_response = request.data.dict()
         print(request.POST.dict())
+        print(constraints)
         return Response(full_response)
 
 
@@ -150,20 +152,23 @@ class ILPOptimizeView(views.APIView):
             )
         alg_index = 0
         algorithm_object = registry.endpoints[algs[alg_index].id]
-        full_response, response = algorithm_object.optimize(request.data)
+        full_response, response, constraints = algorithm_object.optimize(
+            request.data)
 
         model_request = Requests(
             data=json.dumps(request.data),
             full_response=full_response,
             response=response,
-            feedback="",
+            inputs=constraints,
             parent_algorithm=algs[alg_index],
         )
 
         model_request.save()
 
         full_response["request_id"] = model_request.id
-        print(request.data)
+        full_response['data'] = request.POST
+        # full_response = request.data.dict()
+        print(request.POST.dict())
         return Response(full_response)
 
 

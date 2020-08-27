@@ -44,7 +44,7 @@ class Requests(models.Model):
     data = models.CharField(max_length=10000)
     full_response = models.CharField(max_length=10000)
     response = models.CharField(max_length=10000)
-    feedback = models.CharField(max_length=10000, blank=True, null=True)
+    inputs = models.CharField(max_length=10000, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     parent_algorithm = models.ForeignKey(Algorithms, on_delete=models.CASCADE)
 

@@ -46,7 +46,7 @@ class RequestSerializer(serializers.ModelSerializer):
         model = Requests
         read_only_fields = ("id", "data", "full_response", "response",
                             "created_at", "parent_algorithm")
-        fields = ("id", "data", "full_response", "response", "feedback",
+        fields = ("id", "data", "full_response", "response", "inputs",
                   "created_at", "parent_algorithm")
 
 

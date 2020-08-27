@@ -30,7 +30,8 @@ class ILPOptimizer(object):
             modelize = Model(constraints)
             inputs = modelize.load()
             model, decisions = modelize.init_model(inputs)
-            model = modelize.add_constraints(model, inputs, decisions)
+            model, constraints = modelize.add_constraints(
+                model, inputs, decisions)
             response, response_decisions = modelize.solve(model, inputs)
             # response, response_decisions = modelize.postprocessing(
             #    response, response_decisions)
@@ -38,7 +39,7 @@ class ILPOptimizer(object):
             # print('Model run successful')
             self.response = response
             self.response_decisions = response_decisions
-            return self.response, self.response_decisions
+            return self.response, self.response_decisions, constraints
         except Exception as err_msg:
             print("Model run failure, {}".format(err_msg))
 

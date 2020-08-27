@@ -40,8 +40,7 @@ class Model(object):
                         else:
                             value = float(0)
                             constraints[item] = value
-            # self.constraint = self.constraints
-
+            self.constraints = constraints
         return self.constraints
 
     def load(self):
@@ -121,7 +120,7 @@ class Model(object):
             print("Constraint initialization failure, {}".format(err_msg))
 
         # print("Optimization function: " + str(model))
-        return model
+        return model, constraints
 
     def solve(self, model, inputs):
         '''function to run ILP solver'''
