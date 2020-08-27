@@ -125,6 +125,7 @@ class Model(object):
 
     def solve(self, model, inputs):
         '''function to run ILP solver'''
+
         solver = pl.PULP_CBC_CMD(msg=True, warmStart=True)
         response = model.solve(solver)
         model_status = pl.constants.LpStatus[response]
@@ -150,13 +151,22 @@ class Model(object):
                 self, response, response_decisions)
 
         elif model_status == 'Optimal' and solution_value == 0:
-            response = 'No solution found, please enter constraints!'
-            response_decisions = '''No decisions were made! Constraints required.'''
+            response = {
+                'response': 'No solution found, please enter constraints!'
+            }
+            response_decisions = {
+                'decision': '''No decisions were made! Constraints required.'''
+            }
+
             print(response, response_decisions)
 
         else:
-            response = '''No solution found based on the constraints, non-optimal/infeasible solution!'''
-            response_decisions = '''No decisions were made due, non-optimal/infeasible solution'''
+            response = {
+                'response': '''No solution found based on constraints'''
+            }
+            response_decisions = {
+                'response': '''No decisions were made, no solution exists'''
+            }
             print(response, response_decisions)
         return response, response_decisions
 
