@@ -20,6 +20,9 @@ pip = "*"
 install = "*"
 autopep8 = "*"
 django-reset-migrations = "*"
+coreapi = "*"
+djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.8"
