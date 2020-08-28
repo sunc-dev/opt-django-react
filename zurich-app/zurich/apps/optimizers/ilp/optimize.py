@@ -32,14 +32,15 @@ class ILPOptimizer(object):
             model, decisions = modelize.init_model(inputs)
             model, constraints = modelize.add_constraints(
                 model, inputs, decisions)
-            response, response_decisions = modelize.solve(model, inputs)
+            response, response_decisions, model_status, solution_value, status_description = modelize.solve(
+                model, inputs)
             # response, response_decisions = modelize.postprocessing(
             #    response, response_decisions)
 
             # print('Model run successful')
             self.response = response
             self.response_decisions = response_decisions
-            return self.response, self.response_decisions, constraints
+            return self.response, self.response_decisions, constraints, model_status, solution_value, status_description
         except Exception as err_msg:
             print("Model run failure, {}".format(err_msg))
 
@@ -55,6 +56,6 @@ if __name__ == '__main__':
         "water": '22.232342',
         "area": '15.234234'
     }'''
-    x = ILPOptimizer()
+    # x = ILPOptimizer()
 
-    z, y = x.optimize()
+    # z, y = x.optimize()

@@ -130,44 +130,29 @@ class Model(object):
         model_status = pl.constants.LpStatus[response]
         solution_value = pl.value(model.objective)
 
+        response_decisions = [(int(i.name.strip('x')), i.varValue)
+                              for i in model.variables()]
+        response_decisions = pd.DataFrame(list(response_decisions),
+                                          columns=['id', 'isSelected'])
+
+        response = inputs.merge(response_decisions[['id', 'isSelected']],
+                                how='left',
+                                left_on=inputs.index,
+                                right_on=['id'])
+
+        response, response_descisions = Model.postprocessing(
+            self, response, response_decisions)
+
         if model_status == 'Optimal' and solution_value != 0:
-            print("Model status: ", model_status)
-            print("Optimal solution output: ", solution_value)
-            # for variable in model.variables():
-            #    print('Decision: ' + variable.name, "=", variable.varValue)
-
-            response_decisions = [(int(i.name.strip('x')), i.varValue)
-                                  for i in model.variables()]
-            response_decisions = pd.DataFrame(list(response_decisions),
-                                              columns=['id', 'isSelected'])
-
-            response = inputs.merge(response_decisions[['id', 'isSelected']],
-                                    how='left',
-                                    left_on=inputs.index,
-                                    right_on=['id'])
-
-            response, response_descisions = Model.postprocessing(
-                self, response, response_decisions)
+            status_description = 'Optimal solution found!'
 
         elif model_status == 'Optimal' and solution_value == 0:
-            response = {
-                'response': 'No solution found, please enter constraints!'
-            }
-            response_decisions = {
-                'decision': '''No decisions were made! Constraints required.'''
-            }
-
-            print(response, response_decisions)
+            status_description = 'No constraints provided!'
 
         else:
-            response = {
-                'response': '''No solution found based on constraints'''
-            }
-            response_decisions = {
-                'response': '''No decisions were made, no solution exists'''
-            }
+            status_description = 'No optimal solutions was found!'
             print(response, response_decisions)
-        return response, response_decisions
+        return response, response_decisions, model_status, solution_value, status_description
 
     def postprocessing(self, response, response_decisions):
         '''method to run post processing on result, dictionary conversion'''

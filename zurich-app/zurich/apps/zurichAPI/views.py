@@ -103,8 +103,8 @@ class ModelView(views.APIView):
         alg_index = 0
 
         algorithm_object = registry.endpoints[algs[alg_index].id]
-        full_response, response, constraints = algorithm_object.optimize(
-            request.POST.dict())
+        (full_response, response, constraints, model_status, solution_value,
+         status_description) = algorithm_object.optimize(request.POST.dict())
         print(full_response)
 
         requests_model = Requests(
@@ -119,6 +119,9 @@ class ModelView(views.APIView):
 
         full_response["request_id"] = requests_model.id
         full_response['data'] = constraints
+        full_response['model_status'] = model_status
+        full_response['solution_value'] = solution_value
+        full_response['status_description'] = status_description
 
         constraints_model = ModelConstraints()
 
@@ -132,15 +135,17 @@ class ModelView(views.APIView):
 
 
 class ILPOptimizeView(views.APIView):
-    def post(self, request, format=None):
+    def post(self, request, endpoint_name, format=None):
+
+        # algorithm_id = self.request.query_params.get("id")
         algorithm_status = self.request.query_params.get(
             "status", "production")
 
         version = self.request.query_params.get("version")
-        algs = Algorithms.objects.filter(
-            parent_endpoint__name=request.data['algorithm'],
-            status__status=algorithm_status,
-            status__active=True)
+
+        algs = Algorithms.objects.filter(parent_endpoint__name=endpoint_name,
+                                         status__status=algorithm_status,
+                                         status__active=True)
 
         if version is not None:
             algs = algs.filter(version=version)
@@ -153,26 +158,24 @@ class ILPOptimizeView(views.APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         alg_index = 0
-
         algorithm_object = registry.endpoints[algs[alg_index].id]
-        full_response, response, constraints = algorithm_object.optimize(
-            request.POST.dict())
-        print(full_response)
+        (full_response, response, constraints, model_status, solution_value,
+         status_description) = algorithm_object.optimize(request.data)
 
         requests_model = Requests(
-            data=json.dumps(request.POST),
+            data=json.dumps(request.data),
             full_response=full_response,
             response=response,
             inputs=constraints,
             parent_algorithm=algs[alg_index],
         )
 
-        requests_model.save()
-
         full_response["request_id"] = requests_model.id
         full_response['data'] = constraints
+        full_response['model_status'] = model_status
+        full_response['solution_value'] = solution_value
+        full_response['status_description'] = status_description
 
         constraints_model = ModelConstraints()
 
