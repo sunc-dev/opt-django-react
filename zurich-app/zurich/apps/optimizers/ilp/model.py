@@ -152,7 +152,8 @@ class Model(object):
         else:
             status_description = 'No optimal solutions was found!'
             print(response, response_decisions)
-        return response, response_decisions, model_status, solution_value, status_description
+        return (response, response_decisions, model_status, solution_value,
+                status_description)
 
     def postprocessing(self, response, response_decisions):
         '''method to run post processing on result, dictionary conversion'''
